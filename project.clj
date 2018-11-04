@@ -4,9 +4,12 @@
                  [reagent "0.8.1"]
                  [re-frame "0.10.6"]
                  [cljsjs/material-ui "3.2.0-0"]
-                 [cljsjs/material-ui-icons "3.0.1-0"]]
+                 [cljsjs/material-ui-icons "3.0.1-0"]
+                 [lein-doo "0.1.10"]
+                 [devcards "0.2.6"]]
 
-  :plugins [[lein-cljsbuild "1.1.7"]]
+  :plugins [[lein-cljsbuild "1.1.7"]
+            [lein-doo "0.1.10"]]
 
   :min-lein-version "2.5.3"
 
@@ -23,6 +26,8 @@
     :plugins      [[lein-figwheel "0.5.16"]]}
    :prod { }
    }
+
+  :hooks [leiningen.cljsbuild]
 
   :cljsbuild
   {:builds
@@ -45,7 +50,23 @@
                     :optimizations   :advanced
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
+    {:id "test"
+     :source-paths ["src/cljs" "test/cljs"]
+     :compiler {:main runners.doo
+                :optimizations :none
+                :output-dir "resources/public/js/compiled/test/out"
+                :output-to "resources/public/js/compiled/tests/all-tests.js"}}
 
+    {:id "devcards-test"
+     :source-paths ["src/cljs" "test/cljs"]
+     :figwheel {:devcards true}
+     :compiler {:main runners.browser
+                :optimizations :none
+                :asset-path "cljs/tests/out"
+                :output-dir "resources/public/js/compiled/tests/out"
+                :output-to "resources/public/js/compiled/tests/all-tests.js"
+                :source-map-timestamp true}}
+    ]
 
-    ]}
+   :test-commands {"test" ["lein" "doo" "phantom" "test" "once"]}}
   )
